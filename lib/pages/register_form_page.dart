@@ -18,8 +18,6 @@ class _RegisterFormPageState extends State<RegisterFormPage> {
           padding: EdgeInsets.all(16.0),
           children: <Widget>[
             TextField(
-              showCursor: true,
-              readOnly: true,
               decoration: InputDecoration(
                 labelText: 'Full Name *',
                 hintText: 'What do people call you?',
