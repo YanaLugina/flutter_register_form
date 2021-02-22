@@ -8,6 +8,7 @@ class RegisterFormPage extends StatefulWidget {
 
 class _RegisterFormPageState extends State<RegisterFormPage> {
   bool _hidePass = true;
+  final _formKey = GlobalKey<FormState>();
 
   final _nameController = TextEditingController();
   final _phoneController = TextEditingController();
@@ -35,10 +36,11 @@ class _RegisterFormPageState extends State<RegisterFormPage> {
         centerTitle: true,
       ),
       body: Form(
+        key: _formKey,
         child: ListView(
           padding: EdgeInsets.all(16.0),
           children: <Widget>[
-            TextField(
+            TextFormField(
               controller: _nameController,
               decoration: InputDecoration(
                 labelText: 'Full Name *',
@@ -56,6 +58,7 @@ class _RegisterFormPageState extends State<RegisterFormPage> {
                   borderSide: BorderSide(color: Colors.lightBlue, width: 2.0)
                 ),
               ),
+              validator: _validateName,
             ),
             SizedBox(height: 10.0,),
             TextFormField(
@@ -79,8 +82,12 @@ class _RegisterFormPageState extends State<RegisterFormPage> {
               ),
               keyboardType: TextInputType.phone,
               inputFormatters: [
-                FilteringTextInputFormatter.digitsOnly,
+                // FilteringTextInputFormatter.digitsOnly,
+                FilteringTextInputFormatter(RegExp(r'^[()\d -]{1,15}$'), allow: true)
               ],
+              validator: (value) => _validatePhoneNumber(value)
+                  ? null
+                  : 'Phonenumber mast be entered as (###) ###-####',
             ),
             SizedBox(height: 10.0,),
             TextFormField(
@@ -91,6 +98,7 @@ class _RegisterFormPageState extends State<RegisterFormPage> {
                 icon: Icon(Icons.mail),
               ),
               keyboardType: TextInputType.emailAddress,
+              validator: _validateEmail,
             ),
             SizedBox(height: 10.0,),
             TextFormField(
@@ -101,6 +109,9 @@ class _RegisterFormPageState extends State<RegisterFormPage> {
                 helperText: 'Keep it short, this is just a demo',
                 border: OutlineInputBorder(),
               ),
+              inputFormatters: [
+                LengthLimitingTextInputFormatter(100),
+              ],
               maxLines: 3,
             ),
             SizedBox(height: 20.0,),
@@ -121,6 +132,7 @@ class _RegisterFormPageState extends State<RegisterFormPage> {
                 ),
                 icon: Icon(Icons.security),
               ),
+              validator: _validatePassword,
             ),
             SizedBox(height: 10.0,),
             TextFormField(
@@ -140,6 +152,7 @@ class _RegisterFormPageState extends State<RegisterFormPage> {
                 ),
                 icon: Icon(Icons.border_color),
               ),
+              validator: _validatePassword,
             ),
             SizedBox(height: 20.0,),
             RaisedButton(
@@ -159,9 +172,50 @@ class _RegisterFormPageState extends State<RegisterFormPage> {
 
   }
   void _submitForm() {
-    print('Name: ${_nameController.text}');
-    print('Phone: ${_phoneController.text}');
-    print('Email: ${_emailController.text}');
-    print('LifeController: ${_lifeStoreController.text}');
+    if(_formKey.currentState.validate()) {
+      _formKey.currentState.save();
+      print('Form is valid');
+      print('Name: ${_nameController.text}');
+      print('Phone: ${_phoneController.text}');
+      print('Email: ${_emailController.text}');
+      print('LifeController: ${_lifeStoreController.text}');
+    } else {
+      print('Form is not valid please review and correct');
+    }
+  }
+
+  String _validateName(String value){
+    final _nameExp = RegExp(r'^[A-Za-z ]+$');
+    if(value.isEmpty) {
+      return 'Name is required';
+    } else if(!_nameExp.hasMatch(value)) {
+      return 'Please enter alphabetical characters.';
+    } else {
+      return null;
+    }
+  }
+
+  bool _validatePhoneNumber(String input) {
+    final _phoneExp = RegExp(r'^\(\d\d\d\)\d\d\d\-\d\d\d\d$');
+    return _phoneExp.hasMatch(input);
+  }
+
+  String _validateEmail(String value) {
+    if(value.isEmpty) {
+      return 'Email cannot be empty';
+    } else if (!_emailController.text.contains('@')) {
+      return 'Invalid Email address';
+    } else {
+      return null;
+    }
+  }
+  String _validatePassword(String value) {
+    if(_passwordController.text.length != 8) {
+      return '8 character required for password';
+    } else if (_confirmPasswordController.text != _passwordController.text) {
+      return 'Password does not match';
+    } else {
+      return null;
+    }
   }
 }
