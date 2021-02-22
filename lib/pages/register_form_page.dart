@@ -17,6 +17,9 @@ class _RegisterFormPageState extends State<RegisterFormPage> {
   final _passwordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
 
+  List<String> _countries = ['Russia', 'Germany', 'Australia', 'USA'];
+  String _selectedCountry;
+
   @override
   void dispose() {
     _nameController.dispose();
@@ -101,6 +104,29 @@ class _RegisterFormPageState extends State<RegisterFormPage> {
               validator: _validateEmail,
             ),
             SizedBox(height: 10.0,),
+            DropdownButtonFormField(
+              decoration: InputDecoration(
+                border: OutlineInputBorder(),
+                icon: Icon(Icons.map),
+                labelText: 'Country?'
+              ),
+              items: _countries.map((country) {
+                return DropdownMenuItem(
+                  child: Text(country),
+                  value: country,
+                );
+              }).toList(),
+              onChanged: (data) {
+                setState(() {
+                  _selectedCountry = data;
+                });
+              },
+              value: _selectedCountry,
+              validator: (val){
+                return val == null ? 'Please select a country': null;
+              },
+            ),
+            SizedBox(height: 10.0,),
             TextFormField(
               controller: _lifeStoreController,
               decoration: InputDecoration(
@@ -178,6 +204,7 @@ class _RegisterFormPageState extends State<RegisterFormPage> {
       print('Name: ${_nameController.text}');
       print('Phone: ${_phoneController.text}');
       print('Email: ${_emailController.text}');
+      print('Country: $_selectedCountry');
       print('LifeController: ${_lifeStoreController.text}');
     } else {
       print('Form is not valid please review and correct');
