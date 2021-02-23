@@ -17,6 +17,14 @@ class _RegisterFormPageState extends State<RegisterFormPage> {
   final _passwordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
 
+  List<String> _countries = ['Russia', 'Germany', 'Australia', 'USA'];
+  String _selectedCountry;
+
+   final _nameFocus = FocusNode();
+   final _phoneFocus = FocusNode();
+   final _passwordFocus = FocusNode();
+   final _passwordConfirmFocus = FocusNode();
+
   @override
   void dispose() {
     _nameController.dispose();
@@ -25,7 +33,21 @@ class _RegisterFormPageState extends State<RegisterFormPage> {
     _lifeStoreController.dispose();
     _passwordController.dispose();
     _confirmPasswordController.dispose();
+
+    _nameFocus.dispose();
+    _phoneFocus.dispose();
+    _passwordFocus.dispose();
+    _passwordConfirmFocus.dispose();
     super.dispose();
+  }
+
+  void _fieldFocusChange(
+      BuildContext context,
+      FocusNode currentFocus,
+      FocusNode nextFocus
+      ) {
+    currentFocus.unfocus();
+    FocusScope.of(context).requestFocus(nextFocus);
   }
 
   @override
@@ -41,6 +63,11 @@ class _RegisterFormPageState extends State<RegisterFormPage> {
           padding: EdgeInsets.all(16.0),
           children: <Widget>[
             TextFormField(
+              focusNode: _nameFocus,
+              autofocus: true,
+              onFieldSubmitted: (_) {
+                _fieldFocusChange(context, _nameFocus, _phoneFocus);
+              },
               controller: _nameController,
               decoration: InputDecoration(
                 labelText: 'Full Name *',
@@ -62,11 +89,16 @@ class _RegisterFormPageState extends State<RegisterFormPage> {
             ),
             SizedBox(height: 10.0,),
             TextFormField(
+              focusNode: _phoneFocus,
+              autofocus: true,
+              onFieldSubmitted: (_) {
+                _fieldFocusChange(context, _phoneFocus, _passwordFocus);
+              },
               controller: _phoneController,
               decoration: InputDecoration(
                 labelText: 'Phone Number *',
                 hintText: 'Where can we reach you?',
-                helperText: 'Phone format: +7(XXX) XXX-XX-XX',
+                helperText: 'Phone format: +7(XXX) XXX-XXXX',
                 prefixIcon: Icon(Icons.call),
                 suffixIcon: Icon(
                   Icons.delete_outline,
@@ -80,7 +112,8 @@ class _RegisterFormPageState extends State<RegisterFormPage> {
                     borderSide: BorderSide(color: Colors.lightBlue, width: 2.0)
                 ),
               ),
-              keyboardType: TextInputType.phone,
+              keyboardType: TextInputType.numberWithOptions(signed: true, decimal: false),
+              textInputAction: TextInputAction.done,
               inputFormatters: [
                 // FilteringTextInputFormatter.digitsOnly,
                 FilteringTextInputFormatter(RegExp(r'^[()\d -]{1,15}$'), allow: true)
@@ -101,6 +134,29 @@ class _RegisterFormPageState extends State<RegisterFormPage> {
               validator: _validateEmail,
             ),
             SizedBox(height: 10.0,),
+            DropdownButtonFormField(
+              decoration: InputDecoration(
+                border: OutlineInputBorder(),
+                icon: Icon(Icons.map),
+                labelText: 'Country?'
+              ),
+              items: _countries.map((country) {
+                return DropdownMenuItem(
+                  child: Text(country),
+                  value: country,
+                );
+              }).toList(),
+              onChanged: (data) {
+                setState(() {
+                  _selectedCountry = data;
+                });
+              },
+              value: _selectedCountry,
+              validator: (val){
+                return val == null ? 'Please select a country': null;
+              },
+            ),
+            SizedBox(height: 10.0,),
             TextFormField(
               controller: _lifeStoreController,
               decoration: InputDecoration(
@@ -116,6 +172,10 @@ class _RegisterFormPageState extends State<RegisterFormPage> {
             ),
             SizedBox(height: 20.0,),
             TextFormField(
+              focusNode: _passwordFocus,
+              onFieldSubmitted: (_) {
+                _fieldFocusChange(context, _passwordFocus, _passwordConfirmFocus);
+              },
               controller: _passwordController,
               obscureText: _hidePass,
               maxLength: 12,
@@ -136,6 +196,7 @@ class _RegisterFormPageState extends State<RegisterFormPage> {
             ),
             SizedBox(height: 10.0,),
             TextFormField(
+              focusNode: _passwordConfirmFocus,
               controller: _confirmPasswordController,
               obscureText: _hidePass,
               maxLength: 12,
@@ -178,6 +239,7 @@ class _RegisterFormPageState extends State<RegisterFormPage> {
       print('Name: ${_nameController.text}');
       print('Phone: ${_phoneController.text}');
       print('Email: ${_emailController.text}');
+      print('Country: $_selectedCountry');
       print('LifeController: ${_lifeStoreController.text}');
     } else {
       print('Form is not valid please review and correct');
