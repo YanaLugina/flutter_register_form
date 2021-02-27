@@ -237,7 +237,7 @@ class _RegisterFormPageState extends State<RegisterFormPage> {
   void _submitForm() {
     if(_formKey.currentState.validate()) {
       _formKey.currentState.save();
-      print('Form is valid');
+      _showDialog(name: _nameController.text);
       print('Name: ${_nameController.text}');
       print('Phone: ${_phoneController.text}');
       print('Email: ${_emailController.text}');
@@ -260,7 +260,7 @@ class _RegisterFormPageState extends State<RegisterFormPage> {
   }
 
   bool _validatePhoneNumber(String input) {
-    final _phoneExp = RegExp(r'^\(\d\d\d\)\d\d\d\-\d\d\d\d$');
+    final _phoneExp = RegExp(r'^\(\d\d\d\)\d\d\d\-\d\d\-\d\d$');
     return _phoneExp.hasMatch(input);
   }
 
@@ -296,6 +296,43 @@ class _RegisterFormPageState extends State<RegisterFormPage> {
               fontSize: 18.0,
             ))
       ),
+    );
+  }
+
+  void _showDialog({String name}) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Text(
+              'Registration successful',
+            style: TextStyle(
+              color: Colors.green,
+            ),
+          ),
+          content: Text(
+            '$name is now verified register form',
+            style: TextStyle(
+              fontWeight: FontWeight.w700,
+              fontSize: 18.0,
+            ),
+          ),
+          actions: [
+            FlatButton(
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              child: Text(
+                  'Verified',
+                style: TextStyle(
+                  color: Colors.green,
+                  fontSize: 18.0,
+                )
+              ),
+            ),
+          ],
+        );
+      }
     );
   }
 }
