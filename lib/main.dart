@@ -12,9 +12,7 @@ class MyApp extends StatelessWidget {
     return GestureDetector(
       onTap: () {
         FocusScopeNode currentFocus = FocusScope.of(context);
-        print('Tap ${currentFocus.hasPrimaryFocus}');
         if (!currentFocus.hasPrimaryFocus && currentFocus.focusedChild != null) {
-          print('In Tap');
           currentFocus.focusedChild.unfocus();
         }
       },
