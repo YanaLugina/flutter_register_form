@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_forms/model/user.dart';
+import 'package:flutter_forms/pages/user_info_page.dart';
 
 class RegisterFormPage extends StatefulWidget {
   @override
@@ -18,16 +20,19 @@ class _RegisterFormPageState extends State<RegisterFormPage> {
   final _passwordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
 
+  User newUser = User();
+
   List<String> _countries = ['Russia', 'Germany', 'Australia', 'USA'];
   String _selectedCountry;
 
-   final _nameFocus = FocusNode();
-   final _phoneFocus = FocusNode();
-   final _passwordFocus = FocusNode();
-   final _passwordConfirmFocus = FocusNode();
+   FocusNode _nameFocus = FocusNode();
+   FocusNode _phoneFocus = FocusNode();
+   FocusNode _passwordFocus = FocusNode();
+   FocusNode _passwordConfirmFocus = FocusNode();
 
   @override
   void dispose() {
+    super.dispose();
     _nameController.dispose();
     _phoneController.dispose();
     _emailController.dispose();
@@ -39,7 +44,6 @@ class _RegisterFormPageState extends State<RegisterFormPage> {
     _phoneFocus.dispose();
     _passwordFocus.dispose();
     _passwordConfirmFocus.dispose();
-    super.dispose();
   }
 
   void _fieldFocusChange(
@@ -81,7 +85,8 @@ class _RegisterFormPageState extends State<RegisterFormPage> {
                   },
                   child: Icon(
                       Icons.delete_outline,
-                      color: Colors.red),
+                      color: Colors.red
+                  ),
                 ),
                 enabledBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.all(Radius.circular(20.0)),
@@ -93,6 +98,7 @@ class _RegisterFormPageState extends State<RegisterFormPage> {
                 ),
               ),
               validator: _validateName,
+              onSaved: (value) => newUser.name = value,
             ),
             SizedBox(height: 10.0,),
             TextFormField(
@@ -113,7 +119,8 @@ class _RegisterFormPageState extends State<RegisterFormPage> {
                   },
                   child: Icon(
                     Icons.delete_outline,
-                    color: Colors.red,),
+                    color: Colors.red,
+                  ),
                 ),
 
                 enabledBorder: OutlineInputBorder(
@@ -133,7 +140,8 @@ class _RegisterFormPageState extends State<RegisterFormPage> {
               ],
               validator: (value) => _validatePhoneNumber(value)
                   ? null
-                  : 'Phonenumber mast be entered as (###) ###-####',
+                  : 'Phonenumber mast be entered as (###) ###-##-##',
+              onSaved: (value) => newUser.phone = value,
             ),
             SizedBox(height: 10.0,),
             TextFormField(
@@ -144,7 +152,8 @@ class _RegisterFormPageState extends State<RegisterFormPage> {
                 icon: Icon(Icons.mail),
               ),
               keyboardType: TextInputType.emailAddress,
-              validator: _validateEmail,
+              // validator: _validateEmail,
+              onSaved: (value) => newUser.email = value,
             ),
             SizedBox(height: 10.0,),
             DropdownButtonFormField(
@@ -159,9 +168,10 @@ class _RegisterFormPageState extends State<RegisterFormPage> {
                   value: country,
                 );
               }).toList(),
-              onChanged: (data) {
+              onChanged: (country) {
                 setState(() {
-                  _selectedCountry = data;
+                  _selectedCountry = country;
+                  newUser.country = country;
                 });
               },
               value: _selectedCountry,
@@ -182,6 +192,7 @@ class _RegisterFormPageState extends State<RegisterFormPage> {
                 LengthLimitingTextInputFormatter(100),
               ],
               maxLines: 3,
+              onSaved: (value) => newUser.story = value,
             ),
             SizedBox(height: 20.0,),
             TextFormField(
@@ -332,6 +343,14 @@ class _RegisterFormPageState extends State<RegisterFormPage> {
             FlatButton(
               onPressed: () {
                 Navigator.pop(context);
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => UserInfoPage(
+                        userInfo: newUser,
+                      ),
+                    ),
+                );
               },
               child: Text(
                   'Verified',
