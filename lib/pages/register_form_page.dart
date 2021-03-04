@@ -240,9 +240,11 @@ class _RegisterFormPageState extends State<RegisterFormPage> {
               validator: _validatePassword,
             ),
             SizedBox(height: 20.0,),
-            RaisedButton(
+            ElevatedButton(
               onPressed: _submitForm,
-              color: Colors.green,
+              style: ButtonStyle(
+                backgroundColor: MaterialStateProperty.all<Color>(Colors.grey),
+              ),
               child: Text(
                 'Submit Form',
                 style: TextStyle(
@@ -286,7 +288,7 @@ class _RegisterFormPageState extends State<RegisterFormPage> {
     return _phoneExp.hasMatch(input);
   }
 
-  String _validateEmail(String value) {
+/*  String _validateEmail(String value) {
     if(value.isEmpty) {
       return 'Email cannot be empty';
     } else if (!_emailController.text.contains('@')) {
@@ -294,7 +296,8 @@ class _RegisterFormPageState extends State<RegisterFormPage> {
     } else {
       return null;
     }
-  }
+  }*/
+
   String _validatePassword(String value) {
     if(_passwordController.text.length != 8) {
       return '8 character required for password';
@@ -306,7 +309,7 @@ class _RegisterFormPageState extends State<RegisterFormPage> {
   }
 
   void _showMessage({String message}) {
-    _scaffoldKey.currentState.showSnackBar(
+   /* _scaffoldKey.currentState.showSnackBar(
       SnackBar(
         duration: Duration(seconds: 5),
         backgroundColor: Colors.red,
@@ -317,6 +320,20 @@ class _RegisterFormPageState extends State<RegisterFormPage> {
               fontWeight:  FontWeight.w600,
               fontSize: 18.0,
             ))
+      ),
+    );*/
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+          duration: Duration(seconds: 5),
+          backgroundColor: Colors.red,
+          content: Text(
+              message,
+              style: TextStyle(
+                color: Colors.black,
+                fontWeight:  FontWeight.w600,
+                fontSize: 18.0,
+              ))
       ),
     );
   }
@@ -340,7 +357,7 @@ class _RegisterFormPageState extends State<RegisterFormPage> {
             ),
           ),
           actions: [
-            FlatButton(
+            TextButton(
               onPressed: () {
                 Navigator.pop(context);
                 Navigator.push(
