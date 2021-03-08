@@ -26,12 +26,12 @@ class UserInfoPage extends StatelessWidget {
                     fontWeight: FontWeight.w500,
                   ),
                 ),
-                subtitle: userInfo.story.length > 0 ? Text('${userInfo.story}') : null,
+                subtitle: Text('${userInfo.story}'),
                 leading: Icon(
                   Icons.person,
                   color: Colors.black,
                 ),
-                trailing: userInfo.country.length > 0 ? Text('${userInfo.country}') : null,
+                trailing: Text('${userInfo.country}'),
               ),
               ListTile(
                 title: Text(
@@ -45,9 +45,9 @@ class UserInfoPage extends StatelessWidget {
                   color: Colors.black,
                 ),
               ),
-              userInfo.email.length > 0 ? ListTile(
+              ListTile(
                 title: Text(
-                  '${userInfo.email.isEmpty ? 'No specified' : userInfo.email}',
+                  '${userInfo.email}',
                   style: TextStyle(
                     fontWeight: FontWeight.w500,
                   ),
@@ -56,7 +56,7 @@ class UserInfoPage extends StatelessWidget {
                   Icons.mail,
                   color: Colors.black,
                 ),
-              ) : SizedBox(height: 0.0,),
+              )
             ],
           ),
         ),

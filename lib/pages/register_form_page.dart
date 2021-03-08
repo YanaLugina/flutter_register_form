@@ -29,6 +29,7 @@ class _RegisterFormPageState extends State<RegisterFormPage> {
    FocusNode _phoneFocus = FocusNode();
    FocusNode _passwordFocus = FocusNode();
    FocusNode _passwordConfirmFocus = FocusNode();
+   FocusNode _pushFocus = FocusNode();
 
   @override
   void dispose() {
@@ -44,6 +45,7 @@ class _RegisterFormPageState extends State<RegisterFormPage> {
     _phoneFocus.dispose();
     _passwordFocus.dispose();
     _passwordConfirmFocus.dispose();
+    _pushFocus.dispose();
   }
 
   void _fieldFocusChange(
@@ -52,7 +54,9 @@ class _RegisterFormPageState extends State<RegisterFormPage> {
       FocusNode nextFocus
       ) {
     currentFocus.unfocus();
-    FocusScope.of(context).requestFocus(nextFocus);
+    if(nextFocus != null) {
+      FocusScope.of(context).requestFocus(nextFocus);
+    }
   }
 
   @override
@@ -152,15 +156,15 @@ class _RegisterFormPageState extends State<RegisterFormPage> {
                 icon: Icon(Icons.mail),
               ),
               keyboardType: TextInputType.emailAddress,
-              // validator: _validateEmail,
+              validator: _validateEmail,
               onSaved: (value) => newUser.email = value,
             ),
             SizedBox(height: 10.0,),
             DropdownButtonFormField(
               decoration: InputDecoration(
-                border: OutlineInputBorder(),
-                icon: Icon(Icons.map),
-                labelText: 'Country?'
+                  border: OutlineInputBorder(),
+                  icon: Icon(Icons.map),
+                  labelText: 'Country?'
               ),
               items: _countries.map((country) {
                 return DropdownMenuItem(
@@ -175,9 +179,9 @@ class _RegisterFormPageState extends State<RegisterFormPage> {
                 });
               },
               value: _selectedCountry,
-              validator: (val){
-                return val == null ? 'Please select a country': null;
-              },
+              /*validator: (val){
+                return val == null ? 'Please select a country': '';
+              },*/
             ),
             SizedBox(height: 10.0,),
             TextFormField(
@@ -221,6 +225,9 @@ class _RegisterFormPageState extends State<RegisterFormPage> {
             SizedBox(height: 10.0,),
             TextFormField(
               focusNode: _passwordConfirmFocus,
+              onFieldSubmitted: (_) {
+                _fieldFocusChange(context, _passwordConfirmFocus, _pushFocus);
+              },
               controller: _confirmPasswordController,
               obscureText: _hidePass,
               maxLength: 12,
@@ -241,15 +248,19 @@ class _RegisterFormPageState extends State<RegisterFormPage> {
             ),
             SizedBox(height: 20.0,),
             ElevatedButton(
-              onPressed: _submitForm,
+              focusNode: _pushFocus,
+              onPressed: () {
+                _fieldFocusChange(context, _pushFocus, null);
+                _submitForm();
+              },
               style: ButtonStyle(
-                backgroundColor: MaterialStateProperty.all<Color>(Colors.grey),
+                  foregroundColor: MaterialStateProperty.all<Color>(Colors.green)
               ),
               child: Text(
-                'Submit Form',
-                style: TextStyle(
-                  color: Colors.white,
-                )
+                  'Submit Form',
+                  style: TextStyle(
+                    color: Colors.white,
+                  )
               ),
             ),
           ],
@@ -288,7 +299,7 @@ class _RegisterFormPageState extends State<RegisterFormPage> {
     return _phoneExp.hasMatch(input);
   }
 
-/*  String _validateEmail(String value) {
+  String _validateEmail(String value) {
     if(value.isEmpty) {
       return 'Email cannot be empty';
     } else if (!_emailController.text.contains('@')) {
@@ -296,7 +307,7 @@ class _RegisterFormPageState extends State<RegisterFormPage> {
     } else {
       return null;
     }
-  }*/
+  }
 
   String _validatePassword(String value) {
     if(_passwordController.text.length != 8) {
@@ -309,21 +320,7 @@ class _RegisterFormPageState extends State<RegisterFormPage> {
   }
 
   void _showMessage({String message}) {
-   /* _scaffoldKey.currentState.showSnackBar(
-      SnackBar(
-        duration: Duration(seconds: 5),
-        backgroundColor: Colors.red,
-        content: Text(
-            message,
-            style: TextStyle(
-              color: Colors.black,
-              fontWeight:  FontWeight.w600,
-              fontSize: 18.0,
-            ))
-      ),
-    );*/
-
-    ScaffoldMessenger.of(context).showSnackBar(
+    _scaffoldKey.currentState.showSnackBar(
       SnackBar(
           duration: Duration(seconds: 5),
           backgroundColor: Colors.red,
@@ -340,46 +337,46 @@ class _RegisterFormPageState extends State<RegisterFormPage> {
 
   void _showDialog({String name}) {
     showDialog(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          title: Text(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            title: Text(
               'Registration successful',
-            style: TextStyle(
-              color: Colors.green,
+              style: TextStyle(
+                color: Colors.green,
+              ),
             ),
-          ),
-          content: Text(
-            '$name is now verified register form',
-            style: TextStyle(
-              fontWeight: FontWeight.w700,
-              fontSize: 18.0,
+            content: Text(
+              '$name is now verified register form',
+              style: TextStyle(
+                fontWeight: FontWeight.w700,
+                fontSize: 18.0,
+              ),
             ),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.pop(context);
-                Navigator.push(
+            actions: [
+              FlatButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                  Navigator.push(
                     context,
                     MaterialPageRoute(
                       builder: (context) => UserInfoPage(
                         userInfo: newUser,
                       ),
                     ),
-                );
-              },
-              child: Text(
-                  'Verified',
-                style: TextStyle(
-                  color: Colors.green,
-                  fontSize: 18.0,
-                )
+                  );
+                },
+                child: Text(
+                    'Verified',
+                    style: TextStyle(
+                      color: Colors.green,
+                      fontSize: 18.0,
+                    )
+                ),
               ),
-            ),
-          ],
-        );
-      }
+            ],
+          );
+        }
     );
   }
 }
