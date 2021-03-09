@@ -25,15 +25,23 @@ class _RegisterFormPageState extends State<RegisterFormPage> {
   List<String> _countries = ['Russia', 'Germany', 'Australia', 'USA'];
   String _selectedCountry;
 
-   FocusNode _nameFocus = FocusNode();
-   FocusNode _phoneFocus = FocusNode();
-   FocusNode _passwordFocus = FocusNode();
-   FocusNode _passwordConfirmFocus = FocusNode();
-   FocusNode _pushFocus = FocusNode();
+   FocusNode _nameFocus;
+   FocusNode _phoneFocus;
+   FocusNode _passwordFocus;
+   FocusNode _passwordConfirmFocus;
+
+  @override
+  void initState() {
+    super.initState();
+
+    _nameFocus = FocusNode();
+    _phoneFocus = FocusNode();
+    _passwordFocus = FocusNode();
+    _passwordConfirmFocus = FocusNode();
+  }
 
   @override
   void dispose() {
-    super.dispose();
     _nameController.dispose();
     _phoneController.dispose();
     _emailController.dispose();
@@ -45,7 +53,8 @@ class _RegisterFormPageState extends State<RegisterFormPage> {
     _phoneFocus.dispose();
     _passwordFocus.dispose();
     _passwordConfirmFocus.dispose();
-    _pushFocus.dispose();
+
+    super.dispose();
   }
 
   void _fieldFocusChange(
@@ -53,10 +62,8 @@ class _RegisterFormPageState extends State<RegisterFormPage> {
       FocusNode currentFocus,
       FocusNode nextFocus
       ) {
-    currentFocus.unfocus();
-    if(nextFocus != null) {
+      currentFocus.unfocus();
       FocusScope.of(context).requestFocus(nextFocus);
-    }
   }
 
   @override
@@ -75,7 +82,7 @@ class _RegisterFormPageState extends State<RegisterFormPage> {
             TextFormField(
               focusNode: _nameFocus,
               autofocus: true,
-              onFieldSubmitted: (_) {
+              onFieldSubmitted: (term) {
                 _fieldFocusChange(context, _nameFocus, _phoneFocus);
               },
               controller: _nameController,
@@ -107,8 +114,7 @@ class _RegisterFormPageState extends State<RegisterFormPage> {
             SizedBox(height: 10.0,),
             TextFormField(
               focusNode: _phoneFocus,
-              autofocus: true,
-              onFieldSubmitted: (_) {
+              onFieldSubmitted: (term) {
                 _fieldFocusChange(context, _phoneFocus, _passwordFocus);
               },
               controller: _phoneController,
@@ -201,7 +207,7 @@ class _RegisterFormPageState extends State<RegisterFormPage> {
             SizedBox(height: 20.0,),
             TextFormField(
               focusNode: _passwordFocus,
-              onFieldSubmitted: (_) {
+              onFieldSubmitted: (term) {
                 _fieldFocusChange(context, _passwordFocus, _passwordConfirmFocus);
               },
               controller: _passwordController,
@@ -225,34 +231,22 @@ class _RegisterFormPageState extends State<RegisterFormPage> {
             SizedBox(height: 10.0,),
             TextFormField(
               focusNode: _passwordConfirmFocus,
-              onFieldSubmitted: (_) {
-                _fieldFocusChange(context, _passwordConfirmFocus, _pushFocus);
-              },
               controller: _confirmPasswordController,
+              onFieldSubmitted: (term) {
+                _passwordConfirmFocus.unfocus();
+              },
               obscureText: _hidePass,
               maxLength: 12,
               decoration: InputDecoration(
                 labelText: 'Confirm Password *',
                 hintText: 'Confirm the password',
-                suffixIcon: IconButton(
-                  icon: Icon(_hidePass ? Icons.visibility : Icons.visibility_off),
-                  onPressed: () {
-                    setState(() {
-                      _hidePass = !_hidePass;
-                    });
-                  },
-                ),
                 icon: Icon(Icons.border_color),
               ),
               validator: _validatePassword,
             ),
             SizedBox(height: 20.0,),
             ElevatedButton(
-              focusNode: _pushFocus,
-              onPressed: () {
-                _fieldFocusChange(context, _pushFocus, null);
-                _submitForm();
-              },
+              onPressed: _submitForm,
               style: ButtonStyle(
                   foregroundColor: MaterialStateProperty.all<Color>(Colors.green)
               ),
@@ -354,25 +348,25 @@ class _RegisterFormPageState extends State<RegisterFormPage> {
               ),
             ),
             actions: [
-              FlatButton(
-                onPressed: () {
-                  Navigator.pop(context);
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => UserInfoPage(
-                        userInfo: newUser,
+              TextButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => UserInfoPage(
+                          userInfo: newUser,
+                        ),
                       ),
-                    ),
-                  );
-                },
-                child: Text(
-                    'Verified',
-                    style: TextStyle(
-                      color: Colors.green,
-                      fontSize: 18.0,
-                    )
-                ),
+                    );
+                  },
+                  child: Text(
+                      'Verified',
+                      style: TextStyle(
+                        color: Colors.green,
+                        fontSize: 18.0,
+                      )
+                  ),
               ),
             ],
           );
