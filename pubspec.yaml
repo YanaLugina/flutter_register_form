@@ -30,6 +30,21 @@ dependencies:
   cupertino_icons: ^1.0.0
   intl: ^0.17.0
 
+#  my_package:
+#    git:
+#      url: git://github.com/my_company/my_package.git
+#
+#  my_new_package:
+#    git:
+#      url: git://github.com/my_company/my_new_package.git
+#      path: pacages/my_new_package
+#
+#  my_plugin:
+#    path: ../my_plugin/
+#
+#  my_plugin2:
+#    path: /Users/me/folder/my_plugin2/
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
